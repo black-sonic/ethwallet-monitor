@@ -1,7 +1,6 @@
 import os
 import requests
 
-# Ganti dengan API key kamu
 ETHERSCAN_API_KEYS = {
     "eth_mainnet": "EFDG86S8WVCUFD9S8EGWQ5Y1RUC1AF8XTE",
     "eth_sepolia": "EFDG86S8WVCUFD9S8EGWQ5Y1RUC1AF8XTE"
@@ -15,27 +14,45 @@ NETWORK_CONFIG = {
     "eth_mainnet": {
         "name": "Ethereum Mainnet",
         "url": "https://api.etherscan.io/api",
-        "apikey": ETHERSCAN_API_KEYS["eth_mainnet"]
+        "apikey": ETHERSCAN_API_KEYS["eth_mainnet"],
+        "symbol": "ethereum",
+        "unit": "ETH"
     },
     "bsc_mainnet": {
         "name": "Binance Smart Chain Mainnet",
         "url": "https://api.bscscan.com/api",
-        "apikey": BSCSCAN_API_KEYS["bsc_mainnet"]
+        "apikey": BSCSCAN_API_KEYS["bsc_mainnet"],
+        "symbol": "binancecoin",
+        "unit": "BNB"
     },
     "eth_sepolia": {
         "name": "Ethereum Sepolia Testnet",
         "url": "https://api-sepolia.etherscan.io/api",
-        "apikey": ETHERSCAN_API_KEYS["eth_sepolia"]
+        "apikey": ETHERSCAN_API_KEYS["eth_sepolia"],
+        "symbol": "ethereum",
+        "unit": "ETH"
     },
     "bsc_testnet": {
         "name": "Binance Smart Chain Testnet",
         "url": "https://api-testnet.bscscan.com/api",
-        "apikey": BSCSCAN_API_KEYS["bsc_testnet"]
+        "apikey": BSCSCAN_API_KEYS["bsc_testnet"],
+        "symbol": "binancecoin",
+        "unit": "BNB"
     }
 }
 
 def clear():
     os.system('cls' if os.name == 'nt' else 'clear')
+
+def get_price(symbol):
+    try:
+        url = f"https://api.coingecko.com/api/v3/simple/price?ids={symbol}&vs_currencies=usd"
+        res = requests.get(url)
+        if res.status_code == 200:
+            return res.json()[symbol]["usd"]
+    except:
+        pass
+    return None
 
 def main():
     while True:
@@ -109,9 +126,17 @@ def check_balance(network_key):
             data = response.json()
             if data.get("status") == "1":
                 balance_wei = int(data.get("result"))
-                balance_eth = balance_wei / 10**18
-                unit = "ETH" if "eth" in network_key else "BNB"
-                print(f"Balance for {address} on {network_key}: {balance_eth:.6f} {unit}")
+                balance = balance_wei / 10**18
+                unit = network["unit"]
+                print(f"\n{unit} Balance : {balance:.8f} {unit}")
+
+                price = get_price(network["symbol"])
+                if price:
+                    value_usd = balance * price
+                    print(f"{unit} Value   : ${value_usd:.2f} (@ ${price:.2f}/{unit})")
+                else:
+                    print("Unable to fetch USD price.")
+
             else:
                 print("Failed to fetch balance:", data.get("message"))
         except Exception as e:
