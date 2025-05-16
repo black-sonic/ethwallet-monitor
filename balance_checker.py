@@ -38,6 +38,18 @@ NETWORK_CONFIG = {
         "apikey": BSCSCAN_API_KEYS["bsc_testnet"],
         "symbol": "binancecoin",
         "unit": "BNB"
+    },
+    "solana_mainnet": {
+        "name": "Solana Mainnet",
+        "url": "https://api.mainnet-beta.solana.com",
+        "symbol": "solana",
+        "unit": "SOL"
+    },
+    "solana_devnet": {
+        "name": "Solana Devnet",
+        "url": "https://api.devnet.solana.com",
+        "symbol": "solana",
+        "unit": "SOL"
     }
 }
 
@@ -49,10 +61,143 @@ def get_price(symbol):
         url = f"https://api.coingecko.com/api/v3/simple/price?ids={symbol}&vs_currencies=usd"
         res = requests.get(url)
         if res.status_code == 200:
-            return res.json()[symbol]["usd"]
-    except:
-        pass
+            return res.json().get(symbol, {}).get("usd")
+    except Exception as e:
+        print(f"Price fetch error: {e}")
     return None
+
+def resolve_ens(name):
+    if name.endswith(".eth"):
+        try:
+            url = f"https://api.ensideas.com/ens/resolve/{name}"
+            res = requests.get(url)
+            if res.status_code == 200:
+                return res.json().get("address")
+        except:
+            return None
+    return name
+
+def check_balance(network_key):
+    network = NETWORK_CONFIG[network_key]
+    while True:
+        clear()
+        print(f"{network['name']}")
+        raw_input = input("Enter wallet address or ENS (or press Enter to return): ").strip()
+        if raw_input == "":
+            break
+
+        address = resolve_ens(raw_input)
+        if not address or not address.startswith("0x") or len(address) != 42:
+            print("Invalid address or ENS.")
+            input("Press Enter to continue...")
+            continue
+
+        url = f"{network['url']}?module=account&action=balance&address={address}&tag=latest&apikey={network['apikey']}"
+        try:
+            response = requests.get(url)
+            data = response.json()
+            if data.get("status") == "1":
+                balance_wei = int(data.get("result"))
+                balance = balance_wei / 10**18
+                unit = network["unit"]
+                print(f"\n{unit} Balance : {balance:.8f} {unit}")
+
+                price = get_price(network["symbol"])
+                if price:
+                    value_usd = balance * price
+                    print(f"{unit} Value   : ${value_usd:.2f} (@ ${price:.2f}/{unit})")
+                else:
+                    print("Unable to fetch USD price.")
+            else:
+                print("Failed to fetch balance:", data.get("message"))
+        except Exception as e:
+            print("Error occurred:", e)
+
+        input("\nPress Enter to continue...")
+
+def check_solana_balance(network_key):
+    network = NETWORK_CONFIG[network_key]
+    while True:
+        clear()
+        print(f"{network['name']}")
+        address = input("Enter Solana wallet address (or press Enter to return): ").strip()
+        if address == "":
+            break
+
+        headers = {"Content-Type": "application/json"}
+        payload = {
+            "jsonrpc": "2.0",
+            "id": 1,
+            "method": "getBalance",
+            "params": [address]
+        }
+
+        try:
+            response = requests.post(network["url"], headers=headers, json=payload)
+            if response.status_code == 200:
+                data = response.json()
+                if "result" in data:
+                    lamports = data["result"]["value"]
+                    balance = lamports / 1e9  # 1 SOL = 1e9 lamports
+                    unit = network["unit"]
+                    print(f"\n{unit} Balance : {balance:.8f} {unit}")
+
+                    price = get_price(network["symbol"])
+                    if price:
+                        value_usd = balance * price
+                        print(f"{unit} Value   : ${value_usd:.2f} (@ ${price:.2f}/{unit})")
+                    else:
+                        print("Unable to fetch USD price.")
+                else:
+                    print("Failed to fetch balance:", data.get("error", {}).get("message", "Unknown error"))
+            else:
+                print(f"Error fetching balance: {response.status_code}")
+        except Exception as e:
+            print("Error occurred:", e)
+
+        input("\nPress Enter to continue...")
+
+def handle_mainnet():
+    while True:
+        clear()
+        print("Select network (Mainnet):")
+        print("1. Ethereum Mainnet")
+        print("2. Binance Smart Chain Mainnet")
+        print("3. Solana Mainnet")
+        print("0. Back")
+        choice = input("Enter choice (0/1/2/3): ").strip()
+
+        if choice == "0":
+            break
+        elif choice == "1":
+            check_balance("eth_mainnet")
+        elif choice == "2":
+            check_balance("bsc_mainnet")
+        elif choice == "3":
+            check_solana_balance("solana_mainnet")
+        else:
+            input("Invalid choice. Press Enter to continue...")
+
+def handle_testnet():
+    while True:
+        clear()
+        print("Select network (Testnet):")
+        print("1. Ethereum Sepolia")
+        print("2. Binance Smart Chain Testnet")
+        print("3. Solana Devnet")
+        print("0. Back")
+        choice = input("Enter choice (0/1/2/3): ").strip()
+
+        if choice == "0":
+            break
+        elif choice == "1":
+            check_balance("eth_sepolia")
+        elif choice == "2":
+            check_balance("bsc_testnet")
+        elif choice == "3":
+            check_solana_balance("solana_devnet")
+        else:
+            input("Invalid choice. Press Enter to continue...")
 
 def main():
     while True:
@@ -74,75 +219,6 @@ def main():
             handle_testnet()
         else:
             input("Invalid choice. Press Enter to continue...")
-
-def handle_mainnet():
-    while True:
-        clear()
-        print("Select network (Mainnet):")
-        print("1. Ethereum Mainnet")
-        print("2. Binance Smart Chain Mainnet")
-        print("0. Back")
-        choice = input("Enter choice (0/1/2): ").strip()
-
-        if choice == "0":
-            break
-        elif choice == "1":
-            check_balance("eth_mainnet")
-        elif choice == "2":
-            check_balance("bsc_mainnet")
-        else:
-            input("Invalid choice. Press Enter to continue...")
-
-def handle_testnet():
-    while True:
-        clear()
-        print("Select network (Testnet):")
-        print("1. Ethereum Sepolia")
-        print("2. Binance Smart Chain Testnet")
-        print("0. Back")
-        choice = input("Enter choice (0/1/2): ").strip()
-
-        if choice == "0":
-            break
-        elif choice == "1":
-            check_balance("eth_sepolia")
-        elif choice == "2":
-            check_balance("bsc_testnet")
-        else:
-            input("Invalid choice. Press Enter to continue...")
-
-def check_balance(network_key):
-    network = NETWORK_CONFIG[network_key]
-    while True:
-        clear()
-        print(f"{network['name']}")
-        address = input("Enter wallet address (or press Enter to return): ").strip()
-        if address == "":
-            break
-
-        url = f"{network['url']}?module=account&action=balance&address={address}&tag=latest&apikey={network['apikey']}"
-        try:
-            response = requests.get(url)
-            data = response.json()
-            if data.get("status") == "1":
-                balance_wei = int(data.get("result"))
-                balance = balance_wei / 10**18
-                unit = network["unit"]
-                print(f"\n{unit} Balance : {balance:.8f} {unit}")
-
-                price = get_price(network["symbol"])
-                if price:
-                    value_usd = balance * price
-                    print(f"{unit} Value   : ${value_usd:.2f} (@ ${price:.2f}/{unit})")
-                else:
-                    print("Unable to fetch USD price.")
-
-            else:
-                print("Failed to fetch balance:", data.get("message"))
-        except Exception as e:
-            print("Error:", e)
-
-        input("\nPress Enter to continue...")
 
 if __name__ == "__main__":
     main()
