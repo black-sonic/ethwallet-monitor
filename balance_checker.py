@@ -50,6 +50,18 @@ NETWORK_CONFIG = {
         "url": "https://api.devnet.solana.com",
         "symbol": "solana",
         "unit": "SOL"
+    },
+    "base_sepolia": {
+        "name": "Base Sepolia Testnet",
+        "rpc_url": "https://sepolia.base.org",
+        "symbol": "ethereum",
+        "unit": "ETH"
+    },
+    "base_mainnet": {
+        "name": "Base Mainnet",
+        "rpc_url": "https://mainnet.base.org",
+        "symbol": "ethereum",
+        "unit": "ETH"
     }
 }
 
@@ -82,23 +94,60 @@ def check_balance(network_key):
     while True:
         clear()
         print(f"{network['name']}")
-        raw_input = input("Enter wallet address or ENS (or press Enter to return): ").strip()
-        if raw_input == "":
+        raw_input_addr = input("Enter wallet address or ENS (or press Enter to return): ").strip()
+        if raw_input_addr == "":
             break
 
-        address = resolve_ens(raw_input)
+        address = resolve_ens(raw_input_addr)
         if not address or not address.startswith("0x") or len(address) != 42:
             print("Invalid address or ENS.")
             input("Press Enter to continue...")
             continue
 
-        url = f"{network['url']}?module=account&action=balance&address={address}&tag=latest&apikey={network['apikey']}"
-        try:
-            response = requests.get(url)
+        if network_key in ["base_sepolia", "base_mainnet"]:
+            print("Use dedicated menu for Base network.")
+            input("Press Enter to continue...")
+        else:
+            url = f"{network['url']}?module=account&action=balance&address={address}&tag=latest&apikey={network.get('apikey','')}"
+            try:
+                response = requests.get(url)
+                data = response.json()
+                if data.get("status") == "1":
+                    balance_wei = int(data.get("result"))
+                    balance = balance_wei / 10**18
+                    unit = network["unit"]
+                    print(f"\n{unit} Balance : {balance:.8f} {unit}")
+
+                    price = get_price(network["symbol"])
+                    if price:
+                        value_usd = balance * price
+                        print(f"{unit} Value   : ${value_usd:.2f} (@ ${price:.2f}/{unit})")
+                    else:
+                        print("Unable to fetch USD price.")
+                else:
+                    print("Failed to fetch balance:", data.get("message"))
+            except Exception as e:
+                print("Error occurred:", e)
+
+        input("\nPress Enter to continue...")
+
+def check_base_balance(address, network_key):
+    network = NETWORK_CONFIG[network_key]
+    url = network["rpc_url"]
+    headers = {"Content-Type": "application/json"}
+    payload = {
+        "jsonrpc": "2.0",
+        "method": "eth_getBalance",
+        "params": [address, "latest"],
+        "id": 1
+    }
+    try:
+        response = requests.post(url, headers=headers, json=payload)
+        if response.status_code == 200:
             data = response.json()
-            if data.get("status") == "1":
-                balance_wei = int(data.get("result"))
-                balance = balance_wei / 10**18
+            if "result" in data:
+                balance_wei = int(data["result"], 16)
+                balance = balance_wei / 1e18
                 unit = network["unit"]
                 print(f"\n{unit} Balance : {balance:.8f} {unit}")
 
@@ -109,10 +158,28 @@ def check_balance(network_key):
                 else:
                     print("Unable to fetch USD price.")
             else:
-                print("Failed to fetch balance:", data.get("message"))
-        except Exception as e:
-            print("Error occurred:", e)
+                print("Failed to fetch balance:", data.get("error", {}).get("message", "Unknown error"))
+        else:
+            print(f"Error fetching balance: {response.status_code}")
+    except Exception as e:
+        print("Error occurred:", e)
 
+def check_base_balance_menu(network_key):
+    network = NETWORK_CONFIG[network_key]
+    while True:
+        clear()
+        print(f"{network['name']}")
+        raw_input_addr = input("Enter wallet address or ENS (or press Enter to return): ").strip()
+        if raw_input_addr == "":
+            break
+
+        address = resolve_ens(raw_input_addr)
+        if not address or not address.startswith("0x") or len(address) != 42:
+            print("Invalid address or ENS.")
+            input("Press Enter to continue...")
+            continue
+        
+        check_base_balance(address, network_key)
         input("\nPress Enter to continue...")
 
 def check_solana_balance(network_key):
@@ -164,8 +231,9 @@ def handle_mainnet():
         print("1. Ethereum Mainnet")
         print("2. Binance Smart Chain Mainnet")
         print("3. Solana Mainnet")
+        print("4. Base Mainnet")
         print("0. Back")
-        choice = input("Enter choice (0/1/2/3): ").strip()
+        choice = input("Enter choice (0/1/2/3/4): ").strip()
 
         if choice == "0":
             break
@@ -175,6 +243,8 @@ def handle_mainnet():
             check_balance("bsc_mainnet")
         elif choice == "3":
             check_solana_balance("solana_mainnet")
+        elif choice == "4":
+            check_base_balance_menu("base_mainnet")
         else:
             input("Invalid choice. Press Enter to continue...")
 
@@ -185,8 +255,9 @@ def handle_testnet():
         print("1. Ethereum Sepolia")
         print("2. Binance Smart Chain Testnet")
         print("3. Solana Devnet")
+        print("4. Base Sepolia Testnet")
         print("0. Back")
-        choice = input("Enter choice (0/1/2/3): ").strip()
+        choice = input("Enter choice (0/1/2/3/4): ").strip()
 
         if choice == "0":
             break
@@ -196,6 +267,8 @@ def handle_testnet():
             check_balance("bsc_testnet")
         elif choice == "3":
             check_solana_balance("solana_devnet")
+        elif choice == "4":
+            check_base_balance_menu("base_sepolia")
         else:
             input("Invalid choice. Press Enter to continue...")
 
