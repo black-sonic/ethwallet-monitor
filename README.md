@@ -1,6 +1,6 @@
 # ethwallet-monitor
 
-A simple CLI tool to check wallet balances on Ethereum, Binance Smart Chain (BSC), Solana, and Base networks (Mainnet & Testnet/Devnet).
+A simple CLI tool to check wallet balances on Ethereum, Binance Smart Chain (BSC), Solana, Base, and Linea networks (Mainnet & Testnet/Devnet).
 
 ## Features
 - Check balances for multiple wallet addresses

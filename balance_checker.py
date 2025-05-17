@@ -62,6 +62,18 @@ NETWORK_CONFIG = {
         "rpc_url": "https://mainnet.base.org",
         "symbol": "ethereum",
         "unit": "ETH"
+    },
+    "linea_sepolia": {
+        "name": "Linea Sepolia Testnet",
+        "rpc_url": "https://rpc.sepolia.linea.build",
+        "symbol": "ethereum",
+        "unit": "ETH"
+    },
+    "linea_mainnet": {
+        "name": "Linea Mainnet",
+        "rpc_url": "https://rpc.linea.build",
+        "symbol": "ethereum",
+        "unit": "ETH"
     }
 }
 
@@ -104,8 +116,9 @@ def check_balance(network_key):
             input("Press Enter to continue...")
             continue
 
-        if network_key in ["base_sepolia", "base_mainnet"]:
-            print("Use dedicated menu for Base network.")
+        # Handle networks using etherscan-like API
+        if network_key in ["base_sepolia", "base_mainnet", "linea_sepolia", "linea_mainnet"]:
+            print("Use dedicated menu for Base or Linea network.")
             input("Press Enter to continue...")
         else:
             url = f"{network['url']}?module=account&action=balance&address={address}&tag=latest&apikey={network.get('apikey','')}"
@@ -232,8 +245,9 @@ def handle_mainnet():
         print("2. Binance Smart Chain Mainnet")
         print("3. Solana Mainnet")
         print("4. Base Mainnet")
+        print("5. Linea Mainnet")
         print("0. Back")
-        choice = input("Enter choice (0/1/2/3/4): ").strip()
+        choice = input("Enter choice (0/1/2/3/4/5): ").strip()
 
         if choice == "0":
             break
@@ -245,6 +259,8 @@ def handle_mainnet():
             check_solana_balance("solana_mainnet")
         elif choice == "4":
             check_base_balance_menu("base_mainnet")
+        elif choice == "5":
+            check_base_balance_menu("linea_mainnet")
         else:
             input("Invalid choice. Press Enter to continue...")
 
@@ -252,12 +268,13 @@ def handle_testnet():
     while True:
         clear()
         print("Select network (Testnet):")
-        print("1. Ethereum Sepolia")
+        print("1. Ethereum Sepolia Testnet")
         print("2. Binance Smart Chain Testnet")
         print("3. Solana Devnet")
         print("4. Base Sepolia Testnet")
+        print("5. Linea Sepolia Testnet")
         print("0. Back")
-        choice = input("Enter choice (0/1/2/3/4): ").strip()
+        choice = input("Enter choice (0/1/2/3/4/5): ").strip()
 
         if choice == "0":
             break
@@ -269,26 +286,25 @@ def handle_testnet():
             check_solana_balance("solana_devnet")
         elif choice == "4":
             check_base_balance_menu("base_sepolia")
+        elif choice == "5":
+            check_base_balance_menu("linea_sepolia")
         else:
             input("Invalid choice. Press Enter to continue...")
 
 def main():
     while True:
         clear()
-        print("="*40)
-        print("        WALLET BALANCE CHECKER        ")
-        print("="*40)
-        print("Choose Network Environment:")
+        print("=== Crypto Wallet Balance Checker ===")
         print("1. Mainnet")
         print("2. Testnet")
         print("0. Exit")
-        env_choice = input("Enter choice (0/1/2): ").strip()
+        choice = input("Enter choice (0/1/2): ").strip()
 
-        if env_choice == "0":
+        if choice == "0":
             break
-        elif env_choice == "1":
+        elif choice == "1":
             handle_mainnet()
-        elif env_choice == "2":
+        elif choice == "2":
             handle_testnet()
         else:
             input("Invalid choice. Press Enter to continue...")
