@@ -1,6 +1,9 @@
 import os
 import requests
 
+POLYGONSCAN_API_KEYS = {
+    "polygon_mainnet": "6Z1MTASGS9U98QDA13TF7QUZRKM3VTKVXY"
+}
 ETHERSCAN_API_KEYS = {
     "eth_mainnet": "EFDG86S8WVCUFD9S8EGWQ5Y1RUC1AF8XTE",
     "eth_sepolia": "EFDG86S8WVCUFD9S8EGWQ5Y1RUC1AF8XTE"
@@ -74,7 +77,21 @@ NETWORK_CONFIG = {
         "rpc_url": "https://rpc.linea.build",
         "symbol": "ethereum",
         "unit": "ETH"
+    },
+        "polygon_mainnet": {
+        "name": "Polygon Mainnet",
+        "url": "https://api.polygonscan.com/api",
+        "apikey": POLYGONSCAN_API_KEYS["polygon_mainnet"],
+        "symbol": "matic-network",
+        "unit": "MATIC"
+    },
+    "cardona_testnet": {
+        "name": "Polygon zkEVM Cardona Testnet",
+        "rpc_url": "https://rpc.cardona.zkevm-rpc.com",
+        "symbol": "ethereum",
+        "unit": "ETH"
     }
+
 }
 
 def clear():
@@ -246,6 +263,7 @@ def handle_mainnet():
         print("3. Solana Mainnet")
         print("4. Base Mainnet")
         print("5. Linea Mainnet")
+        print("6. Polygon Mainnet")  # Tambahkan ini
         print("0. Back")
         choice = input("Enter choice (0/1/2/3/4/5): ").strip()
 
@@ -261,6 +279,8 @@ def handle_mainnet():
             check_base_balance_menu("base_mainnet")
         elif choice == "5":
             check_base_balance_menu("linea_mainnet")
+        elif choice == "6":
+            check_balance("polygon_mainnet")
         else:
             input("Invalid choice. Press Enter to continue...")
 
@@ -273,6 +293,7 @@ def handle_testnet():
         print("3. Solana Devnet")
         print("4. Base Sepolia Testnet")
         print("5. Linea Sepolia Testnet")
+        print("6. zkEVM Cardona Testnet")  # Tambahkan ini
         print("0. Back")
         choice = input("Enter choice (0/1/2/3/4/5): ").strip()
 
@@ -288,6 +309,8 @@ def handle_testnet():
             check_base_balance_menu("base_sepolia")
         elif choice == "5":
             check_base_balance_menu("linea_sepolia")
+        elif choice == "6":
+            check_base_balance_menu("cardona_testnet")
         else:
             input("Invalid choice. Press Enter to continue...")
 
