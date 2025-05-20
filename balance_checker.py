@@ -1,6 +1,11 @@
 import os
 import requests
 
+OPTIMISMSCAN_API_KEYS = {
+    "optimism_mainnet": "ZVIU3VFGXHU1VHJPA6QIHAKPBS9KVQGJ8W",
+    "optimism_sepolia": "ZVIU3VFGXHU1VHJPA6QIHAKPBS9KVQGJ8W"
+}
+
 POLYGONSCAN_API_KEYS = {
     "polygon_mainnet": "6Z1MTASGS9U98QDA13TF7QUZRKM3VTKVXY"
 }
@@ -90,7 +95,21 @@ NETWORK_CONFIG = {
         "rpc_url": "https://rpc.cardona.zkevm-rpc.com",
         "symbol": "ethereum",
         "unit": "ETH"
-    }
+    },
+    "optimism_mainnet": {
+        "name": "Optimism Mainnet",
+        "url": "https://api-optimistic.etherscan.io/api",
+        "apikey": OPTIMISMSCAN_API_KEYS["optimism_mainnet"],
+        "symbol": "ethereum",
+        "unit": "ETH"
+    },
+    "optimism_sepolia": {
+        "name": "Optimism Sepolia Testnet",
+        "url": "https://api-sepolia-optimism.etherscan.io/api",
+        "apikey": OPTIMISMSCAN_API_KEYS["optimism_sepolia"],
+        "symbol": "ethereum",
+        "unit": "ETH"
+    },
 
 }
 
@@ -263,7 +282,8 @@ def handle_mainnet():
         print("3. Solana Mainnet")
         print("4. Base Mainnet")
         print("5. Linea Mainnet")
-        print("6. Polygon Mainnet")  # Tambahkan ini
+        print("6. Polygon Mainnet")
+        print("7. Optimism Mainnet")
         print("0. Back")
         choice = input("Enter choice (0/1/2/3/4/5): ").strip()
 
@@ -281,6 +301,8 @@ def handle_mainnet():
             check_base_balance_menu("linea_mainnet")
         elif choice == "6":
             check_balance("polygon_mainnet")
+        elif choice == "7":
+            check_balance("optimism_mainnet")
         else:
             input("Invalid choice. Press Enter to continue...")
 
@@ -293,7 +315,8 @@ def handle_testnet():
         print("3. Solana Devnet")
         print("4. Base Sepolia Testnet")
         print("5. Linea Sepolia Testnet")
-        print("6. zkEVM Cardona Testnet")  # Tambahkan ini
+        print("6. zkEVM Cardona Testnet")
+        print("7. Optimism Sepolia Testnet")
         print("0. Back")
         choice = input("Enter choice (0/1/2/3/4/5): ").strip()
 
@@ -311,6 +334,8 @@ def handle_testnet():
             check_base_balance_menu("linea_sepolia")
         elif choice == "6":
             check_base_balance_menu("cardona_testnet")
+        elif choice == "7":
+            check_balance("optimism_sepolia")
         else:
             input("Invalid choice. Press Enter to continue...")
 
