@@ -22,16 +22,23 @@ A simple CLI tool to check wallet balances on Ethereum, Binance Smart Chain (BSC
    python3 balance_checker.py
 
 
-| Network Type | Network              | Notes                       |
-| ------------ | -------------------- | --------------------------- |
-| Mainnet      | Ethereum Mainnet     | Uses Etherscan API          |
-| Mainnet      | Binance Smart Chain  | Uses BscScan API            |
-| Mainnet      | Solana Mainnet       | Uses Solana JSON-RPC        |
-| Mainnet      | Base Mainnet         | Uses Base Mainnet JSON-RPC  |
-| Testnet      | Ethereum Sepolia     | Uses Etherscan Sepolia API  |
-| Testnet      | Binance Smart Chain  | Uses BscScan Testnet API    |
-| Testnet      | Solana Devnet        | Uses Solana Devnet JSON-RPC |
-| Testnet      | Base Sepolia Testnet | Uses Base Sepolia JSON-RPC  |
+| Network Type | Network                    | Notes                          |
+| ------------ | -------------------------- | ------------------------------ |
+| Mainnet      | Ethereum Mainnet           | Uses Etherscan API             |
+| Mainnet      | Binance Smart Chain        | Uses BscScan API               |
+| Mainnet      | Solana Mainnet             | Uses Solana JSON-RPC           |
+| Mainnet      | Base Mainnet               | Uses Base JSON-RPC             |
+| Mainnet      | Linea Mainnet              | Uses Linea JSON-RPC            |
+| Mainnet      | Polygon Mainnet            | Uses Polygonscan API           |
+| Mainnet      | Optimism Mainnet           | Uses OptimismScan API          |
+| Testnet      | Ethereum Sepolia           | Uses Etherscan Sepolia API     |
+| Testnet      | Binance Smart Chain Testnet| Uses BscScan Testnet API       |
+| Testnet      | Solana Devnet              | Uses Solana Devnet JSON-RPC    |
+| Testnet      | Base Sepolia Testnet       | Uses Base Sepolia JSON-RPC     |
+| Testnet      | Linea Sepolia Testnet      | Uses Linea Sepolia JSON-RPC    |
+| Testnet      | zkEVM Cardona Testnet      | Uses Cardona zkEVM JSON-RPC    |
+| Testnet      | Optimism Sepolia Testnet   | Uses OptimismScan Sepolia API  |
+
 
 
 Notes
