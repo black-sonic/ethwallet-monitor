@@ -31,6 +31,7 @@ A simple CLI tool to check wallet balances on Ethereum, Binance Smart Chain (BSC
 | Mainnet      | Linea Mainnet              | Uses Linea JSON-RPC            |
 | Mainnet      | Polygon Mainnet            | Uses Polygonscan API           |
 | Mainnet      | Optimism Mainnet           | Uses OptimismScan API          |
+| Mainnet      | Arbitrum One               | Uses Arbiscan API              |
 | Testnet      | Ethereum Sepolia           | Uses Etherscan Sepolia API     |
 | Testnet      | Binance Smart Chain Testnet| Uses BscScan Testnet API       |
 | Testnet      | Solana Devnet              | Uses Solana Devnet JSON-RPC    |
@@ -38,7 +39,7 @@ A simple CLI tool to check wallet balances on Ethereum, Binance Smart Chain (BSC
 | Testnet      | Linea Sepolia Testnet      | Uses Linea Sepolia JSON-RPC    |
 | Testnet      | zkEVM Cardona Testnet      | Uses Cardona zkEVM JSON-RPC    |
 | Testnet      | Optimism Sepolia Testnet   | Uses OptimismScan Sepolia API  |
-
+| Testnet      | Arbitrum Sepolia Testnet   | Uses Arbiscan Sepolia API      |
 
 
 Notes
