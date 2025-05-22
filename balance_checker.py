@@ -1,6 +1,11 @@
 import os
 import requests
 
+ARBISCAN_API_KEYS = {
+    "arbitrum_mainnet": "4CYSR4DWMBFC75FWVMFHQMK19JC1XM1WRQ",
+    "arbitrum_sepolia": "4CYSR4DWMBFC75FWVMFHQMK19JC1XM1WRQ"
+}
+
 OPTIMISMSCAN_API_KEYS = {
     "optimism_mainnet": "ZVIU3VFGXHU1VHJPA6QIHAKPBS9KVQGJ8W",
     "optimism_sepolia": "ZVIU3VFGXHU1VHJPA6QIHAKPBS9KVQGJ8W"
@@ -107,6 +112,20 @@ NETWORK_CONFIG = {
         "name": "Optimism Sepolia Testnet",
         "url": "https://api-sepolia-optimism.etherscan.io/api",
         "apikey": OPTIMISMSCAN_API_KEYS["optimism_sepolia"],
+        "symbol": "ethereum",
+        "unit": "ETH"
+    },
+    "arbitrum_mainnet": {
+        "name": "Arbitrum One Mainnet",
+        "url": "https://api.arbiscan.io/api",
+        "apikey": ARBISCAN_API_KEYS["arbitrum_mainnet"],
+        "symbol": "ethereum",
+        "unit": "ETH"
+    },
+    "arbitrum_sepolia": {
+        "name": "Arbitrum Sepolia Testnet",
+        "url": "https://api-sepolia.arbiscan.io/api",
+        "apikey": ARBISCAN_API_KEYS["arbitrum_sepolia"],
         "symbol": "ethereum",
         "unit": "ETH"
     },
@@ -284,6 +303,7 @@ def handle_mainnet():
         print("5. Linea Mainnet")
         print("6. Polygon Mainnet")
         print("7. Optimism Mainnet")
+        print("8. Arbitrum One Mainnet")  # Tambahkan ini
         print("0. Back")
         choice = input("Enter choice (0/1/2/3/4/5): ").strip()
 
@@ -303,6 +323,8 @@ def handle_mainnet():
             check_balance("polygon_mainnet")
         elif choice == "7":
             check_balance("optimism_mainnet")
+        elif choice == "8":
+            check_balance("arbitrum_mainnet")
         else:
             input("Invalid choice. Press Enter to continue...")
 
@@ -317,6 +339,7 @@ def handle_testnet():
         print("5. Linea Sepolia Testnet")
         print("6. zkEVM Cardona Testnet")
         print("7. Optimism Sepolia Testnet")
+        print("8. Arbitrum Sepolia Testnet")
         print("0. Back")
         choice = input("Enter choice (0/1/2/3/4/5): ").strip()
 
@@ -336,6 +359,8 @@ def handle_testnet():
             check_base_balance_menu("cardona_testnet")
         elif choice == "7":
             check_balance("optimism_sepolia")
+        elif choice == "8":
+            check_balance("arbitrum_sepolia")
         else:
             input("Invalid choice. Press Enter to continue...")
 
